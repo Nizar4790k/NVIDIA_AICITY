@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 import os
-from skimage import measure
+from skimage import metrics
 from scipy.signal import savgol_filter
 from matplotlib.patches import Rectangle
 from google.colab.patches import cv2_imshow
@@ -392,7 +392,7 @@ def change_detect(Base):
             img1 = cv2.imread(base2 + files[idx+10])
             sad = 0
             if np.sum(img1) != 0 and np.sum(img0) !=0:
-                sad = measure.compare_ssim(img0,img1,multichannel=True,win_size=3)
+                sad = metrics.structural_similarity(img0,img1,multichannel=True,win_size=3)
             else:
                 sad = 0.99
             stat.append(np.max((0,sad)))
@@ -440,8 +440,7 @@ def backtrack(Bounds, PT,Base):
             if back_len>last_frame:
               back_len=int(back_len/10)
             
-            print(base2)
-            print(back_len,last_frame)
+            
 
 
             if back_len<=last_frame:
@@ -461,7 +460,7 @@ def backtrack(Bounds, PT,Base):
                   img1 = cv2.imread(base2 + str(idx) +".jpg")[y-h:y+h,x-w:x+w]
                   img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
                  
-                  ssim = measure.compare_ssim(img0,img1,multichannel=True,win_size=3)
+                  ssim = metrics.structural_similarity(img0,img1,multichannel=True,win_size=3)
                   
                   
                   data['videos'][len(data['videos'])-1]['imgs1'].append(str(idx)+".jpg")
@@ -498,7 +497,7 @@ def backtrack(Bounds, PT,Base):
                 
                 frame_image=video["imgs1"][image_counter]
                 
-                print(image_counter)
+                
                 print("video name:",video_name)
                 print("frame_image:",frame_image)
            
@@ -527,7 +526,7 @@ def backtrack1(Bounds,Base):
     data['videos']=[]
 
     for i in range(0,len(Bounds)):
-        print(i)
+        
         base2 = Base + str(Bounds[i][1]) + "/" 
         files = natsorted(os.listdir(base2))
         stat = list()
@@ -540,9 +539,9 @@ def backtrack1(Bounds,Base):
         last_frame= int((str(files[len(files)-1]).split(".")[0]))
 
         if back_track>last_frame:
-          back_track =int(back_len/10);
+          back_track =int(back_track/10);
 
-        if back_len<=last_frame:
+        if back_track<=last_frame:
           img0 = cv2.imread(base2 + str(back_track) +".jpg")[y-h:y+h,x-w:x+w]
           img0 = cv2.cvtColor(img0, cv2.COLOR_BGR2GRAY)
 
@@ -553,12 +552,12 @@ def backtrack1(Bounds,Base):
 
                 data['videos'].append({
                 'name':videos[(Bounds[i][1])-1]['name'].split('.')[0],
-                'img0':str(back_len) +".jpg",
+                'img0':str(back_track +".jpg"),
                 'imgs1':[],
                 'stat':[]
                 })
 
-                stat.append(measure.compare_ssim(img0,img1,multichannel=True,win_size=3))
+                stat.append(metrics.structural_similarity(img0,img1,multichannel=True,win_size=3))
 
 
           for idx in range(0,len(stat)-35):

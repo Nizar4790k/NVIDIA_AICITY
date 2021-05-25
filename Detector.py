@@ -32,7 +32,7 @@ with open('result.json', 'r') as f:
 
 
 All_Cords = extract_objects(D)
-print(All_Cords)
+
 
 
 # ## Extract Cases
@@ -41,7 +41,7 @@ print(All_Cords)
 
 
 AT = extract_cases(All_Cords)
-print(AT)
+
 
 # ## Detect Change in Camera
 
